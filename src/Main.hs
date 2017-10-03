@@ -2,13 +2,15 @@ module Main (main) where
 
 import Text.Megaparsec
 import Text.Megaparsec.String
-import System.Environment
+import qualified Data.List
+import qualified Data.String.Utils
 
 type KeyVal = (String, String)
 
 main = do
     input <- getContents
-    parseTest iniParser input
+    parseTest iniParser (filterComments input)
+    where filterComments = unlines . (filter $ not . isComment) . lines
 
 iniParser :: Parser [KeyVal]
 iniParser = do
@@ -35,6 +37,6 @@ varParser section = do
   value <- some alphaNumChar
   space
   return (section ++ '.' : key, value)
-
-
   
+isComment :: String -> Bool
+isComment = (Data.List.isPrefixOf ";") . Data.String.Utils.strip
