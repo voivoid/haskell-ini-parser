@@ -1,39 +1,39 @@
 module Main (main) where
 
-import qualified Text.Megaparsec as MP
-import qualified Text.Megaparsec.String as MPS
+import Text.Megaparsec
+import Text.Megaparsec.String
 import System.Environment
 
 type KeyVal = (String, String)
 
 main = do
     input <- getContents
-    MP.parseTest iniParser input
+    parseTest iniParser input
 
-iniParser :: MPS.Parser [KeyVal]
+iniParser :: Parser [KeyVal]
 iniParser = do
-  sections <- MP.some sectionParser
+  sections <- some sectionParser
   return $ concat sections
 
-sectionParser :: MPS.Parser [KeyVal]
+sectionParser :: Parser [KeyVal]
 sectionParser = do
   section <- sectionHeaderParser
-  MP.many ( varParser section )
+  many ( varParser section )
 
-sectionHeaderParser :: MPS.Parser String
+sectionHeaderParser :: Parser String
 sectionHeaderParser = do
-  MP.char '['
-  section <- MP.some MP.alphaNumChar
-  MP.char ']'
-  MP.space
+  char '['
+  section <- some alphaNumChar
+  char ']'
+  space
   return section
 
-varParser :: String -> MPS.Parser KeyVal
+varParser :: String -> Parser KeyVal
 varParser section = do
-  key <- MP.some MP.alphaNumChar
-  MP.char '='
-  value <- MP.some MP.alphaNumChar
-  MP.space
+  key <- some alphaNumChar
+  char '='
+  value <- some alphaNumChar
+  space
   return (section ++ '.' : key, value)
 
 
